@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>cn.xpride.framework</groupId>
+    <artifactId>chat-spring</artifactId>
+    <version>1.0.0</version>
+
+    <properties>
+        <java.version>1.8</java.version>
+
+        <!-- Maven properties -->
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.test.skip>true</maven.test.skip>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+
+        <!-- Project properties -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Spring properties -->
+        <spring-boot.version>2.2.5.RELEASE</spring-boot.version>
+        <swagger.version>2.10.5</swagger.version>
+        <knife4j.version>2.0.8</knife4j.version>
+        <fastjson.version>1.2.76</fastjson.version>
+
+
+        <jib.skip>true</jib.skip>
+        <jib.tag>latest</jib.tag>
+        <jib.host>192.168.1.212</jib.host>
+        <jib.ns>library</jib.ns>
+        <jib.username>jenkins</jib.username>
+        <jib.password>123qweASD</jib.password>
+
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Spring dependencies -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!--web框架-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <!--排除tomcat依赖-->
+                <exclusion>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                    <groupId>org.springframework.boot</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+        <!--undertow容器,post内容x-www-form-urlencoded中文乱码,浏览器由于有隐式的url编解码所以没问题,但是http请求工具就会出问题如Edge里的Boomerang工具，参考：https://blog.csdn.net/weixin_28979339/article/details/111949239   ！-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
+        </dependency>
+        <!-- jpa 依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+        <!--lombok插件-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.name}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+                <configuration>
+                    <finalName>${project.build.finalName}</finalName>
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>1.8.0</version>
+                <configuration>
+                    <skip>${jib.skip}</skip>
+                    <from>
+                        <image>java:8u111-jre-alpine</image>
+                    </from>
+                    <to>
+                        <!--推送的镜像地址库信息-->
+                        <image>${jib.host}/${jib.ns}/${project.build.finalName}:${jib.tag}</image>
+                        <auth>
+                            <username>${jib.username}</username>
+                            <password>${jib.password}</password>
+                        </auth>
+                    </to>
+                    <!--docker仓库没有启用https的需要配置忽略安全-->
+                    <allowInsecureRegistries>true</allowInsecureRegistries>
+                    <container>
+                        <!--服务的启动类-->
+                        <mainClass>cn.xpride.framework.ChatBootStrap</mainClass>
+                        <!--使用当前时间-->
+                        <useCurrentTimestamp>true</useCurrentTimestamp>
+                        <environment>
+                            <TZ>Asia/Shanghai</TZ>
+                            <LANG>C.UTF-8</LANG>
+                        </environment>
+                    </container>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

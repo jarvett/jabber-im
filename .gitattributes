@@ -1,0 +1,10 @@
+# 默认所有文本文件使用LF行尾
+* text=auto eol=lf
+
+# Windows脚本使用CRLF行尾
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# 明确指定常见文本文件类型为LF
+*.sh text eol=lf

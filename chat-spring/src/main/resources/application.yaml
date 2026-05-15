@@ -1,0 +1,32 @@
+server:
+  port: 18888
+logging:
+  level:
+    root: error
+    cn.xpride: debug
+
+# 通用数据源配置
+spring:
+  main:
+    banner-mode: off
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/chat?serverTimezone=Hongkong&allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+  jpa:
+    database: mysql
+    show-sql: true
+
+knife4j:
+  production: ${KNIFE4J_PRODUCTION:false}
+  enable: true
+  setting:
+    enableSwaggerModels: false
+    enableFooter: false
+    enableDocumentManage: false
+    enableFilterMultipartApis: true
+    enableFilterMultipartApiMethodType: POST

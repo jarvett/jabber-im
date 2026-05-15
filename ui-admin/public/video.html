@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>视频帧截取</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .scroll {
+      /*margin:15px;*/
+      width: 500px;
+      height: 5px;
+      background: #ccc;
+      position: relative;
+    }
+
+    .bar {
+      width: 10px;
+      height: 20px;
+      background: #369;
+      position: absolute;
+      top: -7px;
+      left: 0;
+      cursor: pointer;
+    }
+
+    .mask {
+      position: absolute;
+      left: 0;
+      top: 0;
+      background: #369;
+      width: 0;
+      height: 10px;
+    }
+
+    #img-wrap img {
+      width: 480px;
+    }
+  </style>
+</head>
+<body style="text-align: center">
+<!--
+    <input type="file" id="upload-ipt" @change="chooseVideo" accept="video/*" />
+    <div id="box" style="display:none"></div>
+-->
+<input type="file" id="upload-ipt" onchange="chooseVideo()" accept="video/*"/>
+<p id="handle-wrap"></p>
+<div style="display:none">
+  <h3>原视频</h3>
+  <div id="in-box" style="display:none"></div>
+</div>
+<div>
+  <h3>视频截图</h3>
+  <div id="img-wrap"></div>
+</div>
+<div id="scrollWrap" style="display: none">
+  <div class="scroll" id="scroll" style="display: inline-block">
+    <div class="bar" id="bar"></div>
+    <div class="mask" id="mask"></div>
+  </div>
+  <div id="scrollText" style="display: inline-block"></div>
+</div>
+
+<script>
+  var targetWrap = null;
+  var targetVideo = null;
+
+  function chooseVideo() {
+    // var oHandle = document.getElementById('handle-wrap');
+    // oHandle.innerHTML = "<button onclick='showVideo()'>显示视频</button>";
+
+    console.log('选择文件');
+    var obj_file = document.getElementById("upload-ipt");
+    var file = obj_file.files[0];
+    var blob = new Blob([file]); // 文件转化成二进制文件
+    var url = URL.createObjectURL(blob); //转化成url
+    // console.log(blob, url);
+    var oVideo = document.createElement('video');
+    oVideo.setAttribute('src', url);
+    oVideo.setAttribute('controls', 'controls');
+    oVideo.currentTime = 1;  // 设置当前视频为 第1s
+    targetVideo = oVideo;
+    var oInBox = document.getElementById('in-box');
+    oInBox.appendChild(oVideo);
+    targetWrap = oInBox;
+    // console.dir(oVideo);
+    /*
+                oVideo.addEventListener('canplay', function (event){
+                    var oCanvas = document.createElement('canvas');
+                    setTimeout( ()=>{
+                        oCanvas.width = oVideo.videoWidth;
+                        oCanvas.height = oVideo.videoHeight;
+                        oCanvas.getContext("2d").drawImage(oVideo, 0, 0, oCanvas.width, oCanvas.height * 2);
+                        console.log(oCanvas.toDataURL("image/png")); //第一帧图片url
+                    }, 1000 )
+                });
+    */
+    oVideo.addEventListener('canplay', function (event) {
+      var oCanvas = document.createElement('canvas');
+      oCanvas.width = oVideo.videoWidth;
+      oCanvas.height = oVideo.videoHeight;
+      oCanvas.getContext("2d").drawImage(oVideo, 0, 0, oCanvas.width, oCanvas.height);
+
+      var base64 = oCanvas.toDataURL("image/png");
+      var oImg = document.createElement("img");
+      var oImgWrap = document.getElementById('img-wrap');
+      clearChild(oImgWrap)
+      oImg.setAttribute('src', base64);
+      oImgWrap.appendChild(oImg);
+      document.getElementById('scrollText').innerText = parseInt(targetVideo.duration) + '秒'
+      document.getElementById('scrollWrap').style.display = 'block'
+    });
+  }
+
+  function clearChild(element) {
+    for (var i = 0; i < element.childNodes.length; i++) {
+      var node = element.childNodes[i];
+      node.parentNode.removeChild(node);
+    }
+  }
+
+  function showVideo() {
+    // var oVideo = document.createElement('video');
+    // oVideo.setAttribute('controls', 'controls');
+    var oInBox = document.getElementById('in-box');
+    oInBox.style.display = 'block';
+  }
+
+  var scroll = document.getElementById('scroll');
+  var bar = document.getElementById('bar');
+  var mask = document.getElementById('mask');
+  // var ptxt = document.getElementsByTagName('p')[0];
+  var barleft = 0;
+
+  bar.onmousedown = function (event) {
+    var event = event || window.event;
+    var leftVal = event.clientX - this.offsetLeft;
+    var that = this;
+    // 拖动一定写到 down 里面才可以
+    document.onmousemove = function (event) {
+      var event = event || window.event;
+      barleft = event.clientX - leftVal;
+      if (barleft < 0)
+        barleft = 0;
+      else if (barleft > scroll.offsetWidth - bar.offsetWidth)
+        barleft = scroll.offsetWidth - bar.offsetWidth;
+      mask.style.width = barleft + 'px';
+      that.style.left = barleft + "px";
+      // ptxt.innerHTML = "已经播放了" + parseInt(barleft/(scroll.offsetWidth-
+      //     bar.offsetWidth) * 100) + "%";
+      var t = parseInt(targetVideo.duration * barleft / (scroll.offsetWidth - bar.offsetWidth));
+      if (t) {
+        targetVideo.currentTime = t;
+      }
+      //防止选择内容--当拖动鼠标过快时候，弹起鼠标，bar也会移动，修复bug
+      window.getSelection ? window.getSelection().removeAllRanges() :
+        document.selection.empty();
+    }
+
+  }
+
+  document.onmouseup = function () {
+    document.onmousemove = null; //弹起鼠标不做任何操作
+  }
+
+  // function changePercent(percent) {
+  //     mask.style.width = percent*5+'px';
+  //     bar.style.left = percent*5+'px';
+  //     console.log(scroll.offsetWidth);
+  //     console.log(mask.offsetWidth);
+  //     ptxt.innerHTML = "已经播放了" + parseInt(mask.offsetWidth* 100/scroll.offsetWidth ) + "%";
+  // }
+
+</script>
+</body>
+</html>
