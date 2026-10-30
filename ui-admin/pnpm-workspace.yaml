@@ -1,0 +1,3 @@
+# Vite 的 esbuild 安装脚本用于检查本地构建二进制。
+allowBuilds:
+  esbuild: true

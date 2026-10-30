@@ -1,0 +1,23 @@
+http:
+  # HTTP 和 WebSocket 共用端口，默认与 chat-spring 一致。
+  port: ${CHAT_PORT:18888}
+jdbc:
+  # 连接既有 chat 数据库；本应用不会执行 DDL。
+  url: ${CHAT_DB_URL:jdbc:mysql://127.0.0.1:3306/chat?serverTimezone=Hongkong&allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true}
+  # MySQL 用户名。
+  username: ${CHAT_DB_USER:admin}
+  # MySQL 密码，部署时通过环境变量配置。
+  password: ${CHAT_DB_PASSWORD:123456}
+  # MySQL Connector/J 驱动类。
+  driver-class-name: com.mysql.cj.jdbc.Driver
+  pool:
+    # 最少空闲连接数。
+    min-idle: 5
+    # 最大连接数，保持旧服务配置。
+    max-size: 20
+logging:
+  level:
+    # 全局日志最低级别。
+    root: INFO
+    # 聊天业务日志最低级别。
+    cn.xpride: DEBUG

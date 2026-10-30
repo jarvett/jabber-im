@@ -1,0 +1,215 @@
+@import "tailwindcss";
+:root {
+  font-family: Arial, "Microsoft YaHei", sans-serif;
+  color: #273449;
+  background: #eef1f5;
+  font-size: 15px;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button,
+a,
+input,
+textarea {
+  touch-action: manipulation;
+}
+button {
+  cursor: pointer;
+  border: 1px solid #dce2e9;
+  background: white;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font: inherit;
+  white-space: nowrap;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+a {
+  color: #278342;
+  text-decoration: none;
+}
+input:not([type="checkbox"]),
+textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #cdd5df;
+  border-radius: 6px;
+  padding: 10px;
+  background: white;
+  font: inherit;
+}
+textarea {
+  resize: none;
+}
+input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  accent-color: #2aaf55;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #2aaf55;
+  outline-offset: 2px;
+}
+h1 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+label {
+  display: block;
+  margin: 16px 0 10px;
+}
+.primary {
+  background: #2aaf55;
+  color: white;
+  border-color: #2aaf55;
+}
+.app-shell {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  margin: auto;
+  background: white;
+}
+.app-header {
+  min-height: 58px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.app-header > strong,
+.app-header > span {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.app-header nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  margin-left: auto;
+}
+.app-header nav > * {
+  flex-shrink: 0;
+}
+.app-header nav a {
+  padding: 7px 12px;
+  border-radius: 6px;
+  color: #64748b;
+  font-size: 14px;
+}
+.app-header nav a:hover {
+  background: #f1f5f9;
+}
+.app-header nav a.router-link-active {
+  color: #278342;
+  background: #edf7ef;
+}
+main {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.notice {
+  background: #fff6dc;
+  color: #784c00;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  z-index: 10;
+  flex-shrink: 0;
+}
+.notice button {
+  background: transparent;
+  border: 0;
+}
+.login-card {
+  max-width: 430px;
+  margin: 12vh auto;
+  padding: 32px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+.panel {
+  padding: 24px;
+  max-width: 700px;
+  margin: auto;
+}
+.profile form {
+  margin-top: 20px;
+}
+.avatar {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.avatar.large {
+  width: 72px;
+  height: 72px;
+}
+.person {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #eee;
+}
+.empty {
+  padding: 36px 16px;
+  text-align: center;
+  color: #7b8798;
+}
+.mobile {
+  max-width: 600px;
+}
+
+.mobile .login-card {
+  margin: 10vh 16px;
+  padding: 24px;
+}
+.mobile .panel {
+  padding: 16px;
+}
+@media (max-width: 640px) {
+  .login-card {
+    margin: 8vh 16px;
+    padding: 24px;
+  }
+  .app-header {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .app-header > span {
+    font-size: 10px;
+  }
+  .app-header nav {
+    gap: 2px;
+  }
+  .app-header nav a {
+    padding: 7px 6px;
+    font-size: 13px;
+  }
+  .bubble {
+    max-width: 82%;
+  }
+}

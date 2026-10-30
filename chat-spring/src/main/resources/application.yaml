@@ -2,8 +2,8 @@ server:
   port: 18888
 logging:
   level:
-    root: error
-    cn.xpride: debug
+    root: INFO
+    cn.xpride: DEBUG
 
 # 通用数据源配置
 spring:
@@ -12,7 +12,7 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/chat?serverTimezone=Hongkong&allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true
-    username: root
+    username: admin
     password: 123456
     hikari:
       maximum-pool-size: 20

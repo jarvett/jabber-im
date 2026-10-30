@@ -2,7 +2,6 @@
 node_modules
 /dist
 package-lock.json
-pnpm-lock.yaml
 
 # local env files
 .env.local
@@ -22,3 +21,7 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# 浏览器测试产物
+test-results/
+playwright-report/

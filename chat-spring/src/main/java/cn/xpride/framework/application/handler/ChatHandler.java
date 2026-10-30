@@ -153,4 +153,9 @@ public class ChatHandler extends AppWebBaseHandler {
     }
 
 
+    @PostMapping(value = "markRead")
+    @ApiOperation("确认当前用户已读消息")
+    public DialogueModelDto markRead(@RequestParam Long channelId, @RequestParam String messageId) throws HandlerException {
+        return new DialogueModelDto(chatBizService.markRead(getMyToken().getUserId(), channelId, messageId));
+    }
 }

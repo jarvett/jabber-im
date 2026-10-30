@@ -31,4 +31,7 @@ public interface ChannelRepository extends JpaRepository<Channel,Long> {
     @Query(value = "update im_channel set update_time = :now,msg_count = msg_count + 1 where id = :channelId",nativeQuery = true)
     void updateMsgCount(@Param("channelId") Long channelId,@Param("now") Long now);
 
+    // 与发送消息、已读确认共用频道行锁，保证未读计数和消息落库串行提交。
+    @Query(value = "select * from im_channel where id = :id for update", nativeQuery = true)
+    Channel lockById(@Param("id") Long id);
 }

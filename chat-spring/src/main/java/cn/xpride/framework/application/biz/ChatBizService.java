@@ -14,6 +14,7 @@ import cn.xpride.framework.base.HandlerExceptionHelper;
 import cn.xpride.framework.base.ImConstant;
 import cn.xpride.framework.utility.*;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
@@ -250,7 +251,11 @@ public class ChatBizService {
         });
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public MessageContentResponse sendMsgToChannel(MessageContentRequest request) throws HandlerException {
+        // 已读确认与发送共用频道锁；未读计数和消息记录必须在同一事务提交。
+        Channel lockedChannel = channelRepository.lockById(request.getChannelId());
+        HandlerExceptionHelper.throwExceptionIfNull(lockedChannel, "通讯频道不存在");
         long now = System.currentTimeMillis();
         Long sid = request.getSenderId();
         Long channelId = request.getChannelId();
@@ -329,6 +334,28 @@ public class ChatBizService {
         ret.setTime(now);
         ret.setReceiveIdList(receiveIdList);
         return ret;
+    }
+
+    /** 只确认已展示且仍是最新的消息。旧确认不清除后续消息的未读数，重复确认无副作用。 */
+    @Transactional(rollbackFor = Exception.class)
+    public DialogueModel markRead(Long sid, Long channelId, String messageId) throws HandlerException {
+        Channel channel = channelRepository.lockById(channelId);
+        HandlerExceptionHelper.throwExceptionIfNull(channel, "通讯频道不存在");
+        checkAndGetConfig(sid, channelId);
+        Dialogue dialogue = dialogueRepository.getBySubscriberIdAndChannelId(sid, channelId);
+        HandlerExceptionHelper.throwExceptionIfNull(dialogue, "对话还未创建");
+        ChannelMsg seen = channelMsgRepository.findFirstById(messageId);
+        HandlerExceptionHelper.throwExceptionIfNull(seen, "消息不存在");
+        HandlerExceptionHelper.throwException(!channelId.equals(seen.getChannelId()), "消息不属于当前会话");
+        List<ChannelMsg> latest = channelMsgRepository.findPageByChannelId(channelId, 0, 1);
+        int unread = dialogue.getUnreadCount();
+        // 频道锁阻止发送线程在校验与清零之间插入新消息。
+        if (!latest.isEmpty() && messageId.equals(latest.get(0).getId())) {
+            dialogueRepository.markRead(dialogue.getId(), seen.getTime());
+            unread = 0;
+        }
+        return new DialogueModel(dialogue.getId(), channelId, dialogue.getType(), dialogue.getName(),
+                dialogue.getAvatar(), dialogue.getBrief(), dialogue.getLastTime(), unread);
     }
 
     public List<ChannelMsgModel> getMsgListByChannelId(Long sid, Long channelId, Integer pageNow) throws HandlerException {

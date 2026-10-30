@@ -44,4 +44,7 @@ public interface DialogueRepository extends JpaRepository<Dialogue,Long> {
     @Query(value = "update im_dialogue set avatar = :avatar,name = :name where id = :id",nativeQuery = true)
     void updateAvatarAndName(@Param("id") Long id,@Param("avatar")  String avatar,@Param("name")  String name);
 
+    @Modifying
+    @Query(value = "update im_dialogue set unread_count = 0, last_read_time = greatest(last_read_time, :readTime) where id = :id", nativeQuery = true)
+    void markRead(@Param("id") Long id, @Param("readTime") Long readTime);
 }

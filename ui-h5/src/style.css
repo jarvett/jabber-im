@@ -1,0 +1,103 @@
+/* 不加载 preflight，避免改写原版 H5 控件样式。 */
+@layer theme, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+html,
+body,
+#app,
+.h5-app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  color: #000;
+  background: #fff;
+}
+* {
+  box-sizing: border-box;
+}
+button,
+input {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: default;
+}
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+}
+.icon-button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+.icon-button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid #ff5977;
+  outline-offset: -2px;
+}
+.h5-app {
+  height: 100dvh;
+  position: relative;
+  overflow: hidden;
+}
+.h5-app.with-tabs {
+  padding-bottom: calc(50px + env(safe-area-inset-bottom));
+}
+.tab-bar {
+  display: flex;
+  position: absolute;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  height: calc(50px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -2px 1px rgba(204, 204, 204, 0.5);
+  background: #fff;
+  z-index: 10;
+}
+.tab-bar-item {
+  flex: 1;
+  text-align: center;
+  color: #000;
+  text-decoration: none;
+}
+.tab-bar-item.active {
+  color: #ff5977;
+}
+.tab-bar-item svg {
+  width: 24px;
+  height: 24px;
+  margin-top: 3px;
+  vertical-align: middle;
+  margin-bottom: 2px;
+}
+.scroll-status {
+  text-align: center;
+  color: #aaa;
+  font-size: 12px;
+  padding: 12px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
